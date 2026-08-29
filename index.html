@@ -1,0 +1,1523 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<title>マイ・オフラインギルド v9</title>
+<style>
+  :root{
+    --bg:#2d2119;
+    --bg2:#1f1712;
+    --paper:#ead8ad;
+    --paper2:#dfc88e;
+    --ink:#342619;
+    --muted:#6f604d;
+    --line:#8e7045;
+    --accent:#72532f;
+    --danger:#7b342d;
+    --success:#3f5e3c;
+    --shadow:0 16px 40px rgba(0,0,0,.28);
+    --radius:18px;
+    --tap:48px;
+  }
+
+  *{box-sizing:border-box}
+  html{min-height:100%;background:var(--bg2)}
+
+  body{
+    margin:0;
+    min-height:100vh;
+    color:var(--ink);
+    font-family:"Yu Mincho","YuMincho","Hiragino Mincho ProN","Hiragino Mincho Pro","MS PMincho","MS Mincho",serif;
+    background:
+      radial-gradient(circle at 20% 0%,rgba(255,255,255,.05),transparent 34%),
+      linear-gradient(180deg,var(--bg),var(--bg2));
+  }
+
+  button,input,select{font:inherit}
+  button{
+    min-height:var(--tap);
+    cursor:pointer;
+    touch-action:manipulation;
+  }
+
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  summary:focus-visible{
+    outline:3px solid rgba(114,83,47,.45);
+    outline-offset:2px;
+  }
+
+  .app{
+    width:min(100%,760px);
+    margin:0 auto;
+    padding:16px 12px calc(28px + env(safe-area-inset-bottom));
+  }
+
+  .hero{
+    color:#f4e9ce;
+    padding:10px 6px 18px;
+    text-align:center;
+  }
+
+  .hero h1{
+    font-size:clamp(1.55rem,5vw,2.35rem);
+    margin:0 0 6px;
+    letter-spacing:.05em;
+    text-shadow:0 2px 10px rgba(0,0,0,.18);
+  }
+
+  .hero p{margin:0;opacity:.82;font-size:.92rem}
+
+  .paper{
+    position:relative;
+    overflow:hidden;
+    background:
+      linear-gradient(90deg,rgba(89,62,32,.045) 1px,transparent 1px),
+      linear-gradient(rgba(89,62,32,.045) 1px,transparent 1px),
+      linear-gradient(145deg,var(--paper),var(--paper2));
+    background-size:18px 18px,18px 18px,auto;
+    border:1px solid rgba(76,49,26,.52);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:16px;
+  }
+
+  .paper::before{
+    content:"";
+    position:absolute;
+    inset:7px;
+    pointer-events:none;
+    border:1px solid rgba(83,59,33,.25);
+    border-radius:13px;
+  }
+
+  .paper + .paper{margin-top:14px}
+
+  .topbar{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:12px;
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+  .section-head{
+    display:grid;
+    grid-template-columns:1fr auto;
+    align-items:start;
+    gap:10px;
+    margin:0 0 12px;
+    padding-bottom:8px;
+    border-bottom:1px solid rgba(98,71,39,.14);
+  }
+
+  .section-head h2{
+    margin:0;
+    display:flex;
+    align-items:center;
+    gap:.42em;
+    font-size:1.18rem;
+    letter-spacing:.03em;
+  }
+
+  .section-head h2::before{
+    content:"◆";
+    color:#8b6a43;
+    font-size:.72em;
+    transform:translateY(-.04em);
+  }
+
+  .rank-inline{
+    display:grid;
+    gap:2px;
+    margin-top:8px;
+    padding:8px 10px;
+    border:1px solid rgba(98,71,39,.16);
+    border-radius:10px;
+    background:rgba(255,250,232,.34);
+    color:var(--accent);
+    font-size:.84rem;
+    line-height:1.45;
+  }
+
+  .rank-inline strong{
+    font-size:.98rem;
+  }
+
+  .rank-inline span{
+    color:var(--muted);
+  }
+
+  .shop-heading-row{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:8px 14px;
+  }
+
+  .shop-gold{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding:5px 9px;
+    border:1px solid rgba(98,71,39,.16);
+    border-radius:999px;
+    background:rgba(255,250,232,.34);
+    color:var(--muted);
+    font-size:.88rem;
+    white-space:nowrap;
+  }
+
+  .shop-gold strong{
+    color:var(--ink);
+    font-size:1.02rem;
+  }
+
+  .section-add-btn{
+    min-width:82px;
+    padding:10px 12px;
+    white-space:nowrap;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    letter-spacing:.03em;
+  }
+
+  .small{color:var(--muted);font-size:.84rem;line-height:1.55}
+  .stack{display:grid;gap:10px}
+
+  .item{
+    position:relative;
+    z-index:1;
+    display:grid;
+    gap:10px;
+    padding:12px;
+    background:linear-gradient(180deg,rgba(255,250,232,.58),rgba(243,229,189,.46));
+    border:1px solid rgba(92,63,33,.24);
+    border-radius:14px;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.28),
+      0 2px 8px rgba(58,39,22,.05);
+  }
+
+  .item-main{min-width:0}
+  .item-title{
+    font-weight:700;
+    line-height:1.45;
+    overflow-wrap:anywhere;
+  }
+
+  .item-meta{
+    margin-top:4px;
+    color:var(--muted);
+    font-size:.86rem;
+  }
+
+  .streak{
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    margin-top:7px;
+    padding:5px 8px;
+    border:1px solid rgba(92,63,33,.2);
+    border-radius:999px;
+    background:rgba(255,250,232,.38);
+    color:var(--accent);
+    font-size:.78rem;
+    font-weight:700;
+  }
+
+  .item-actions{
+    display:grid;
+    grid-template-columns:1fr auto auto;
+    gap:8px;
+  }
+
+  .btn{
+    border:1px solid rgba(71,49,28,.45);
+    border-radius:12px;
+    padding:10px 13px;
+    background:linear-gradient(#8d6940,#6e4e2d);
+    color:#fff8e9;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.14),
+      0 3px 0 rgba(48,31,17,.25);
+  }
+
+  .btn:hover{filter:brightness(1.04)}
+  .btn:active{transform:translateY(1px);box-shadow:0 2px 0 rgba(48,31,17,.22)}
+  .btn.secondary{
+    color:var(--ink);
+    background:linear-gradient(rgba(255,252,241,.92),rgba(242,230,199,.92));
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.32),
+      0 2px 0 rgba(82,58,31,.10);
+  }
+  .btn.danger{background:var(--danger)}
+  .btn.success{background:var(--success)}
+  .btn:disabled{
+    cursor:not-allowed;
+    opacity:.58;
+    filter:grayscale(.15);
+    transform:none;
+    box-shadow:none;
+  }
+
+  .icon-btn{min-width:48px;padding:8px 10px}
+
+  .toolbar{
+    position:relative;
+    z-index:1;
+    display:grid;
+    grid-template-columns:1fr;
+    gap:8px;
+  }
+
+  .form-grid{display:grid;gap:10px}
+
+  label{
+    display:grid;
+    gap:5px;
+    font-size:.9rem;
+  }
+
+  input,select{
+    width:100%;
+    min-height:46px;
+    color:var(--ink);
+    border:1px solid rgba(74,50,28,.4);
+    border-radius:10px;
+    padding:10px 11px;
+    background:rgba(255,252,240,.72);
+  }
+
+  .modal{
+    border:none;
+    border-radius:18px;
+    width:min(calc(100% - 24px),540px);
+    padding:0;
+    background:transparent;
+  }
+
+  .modal::backdrop{
+    background:rgba(16,12,9,.62);
+    backdrop-filter:blur(2px);
+  }
+
+  .modal-box{
+    background:linear-gradient(145deg,var(--paper),var(--paper2));
+    border:1px solid rgba(70,46,25,.55);
+    border-radius:18px;
+    box-shadow:var(--shadow);
+    padding:18px;
+    color:var(--ink);
+  }
+
+  .modal-box h3{margin:0 0 14px}
+
+  .modal-actions{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    margin-top:14px;
+  }
+
+  .empty{
+    position:relative;
+    z-index:1;
+    text-align:center;
+    padding:18px 10px;
+    color:var(--muted);
+    border:1px dashed rgba(82,57,31,.38);
+    border-radius:12px;
+  }
+
+  .log{
+    display:grid;
+    gap:7px;
+    max-height:360px;
+    overflow:auto;
+    padding-right:2px;
+  }
+
+  .log-row{
+    position:relative;
+    z-index:1;
+    display:grid;
+    grid-template-columns:auto 1fr;
+    gap:10px;
+    align-items:start;
+    border-bottom:1px solid rgba(86,58,31,.16);
+    padding:8px 2px;
+  }
+
+  .log-amount{font-weight:700;white-space:nowrap}
+  .log-amount.plus{color:#335a35}
+  .log-amount.minus{color:#74342e}
+  .log-title{font-size:.92rem}
+  .log-date{margin-top:2px;color:var(--muted);font-size:.78rem}
+
+  details{position:relative;z-index:1}
+
+  summary{
+    min-height:44px;
+    display:flex;
+    align-items:center;
+    cursor:pointer;
+    font-weight:700;
+  }
+
+  .notice{
+    position:relative;
+    z-index:1;
+    padding:10px 12px;
+    margin-top:10px;
+    border-left:4px solid var(--line);
+    background:rgba(255,250,232,.36);
+    font-size:.84rem;
+    line-height:1.65;
+  }
+
+  .status{
+    position:fixed;
+    left:50%;
+    bottom:calc(16px + env(safe-area-inset-bottom));
+    transform:translateX(-50%);
+    z-index:50;
+    width:min(calc(100% - 24px),560px);
+    padding:11px 14px;
+    border-radius:12px;
+    background:#21170f;
+    color:#fff4de;
+    box-shadow:0 10px 30px rgba(0,0,0,.34);
+    text-align:center;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .18s ease;
+  }
+
+  .status.show{opacity:1}
+
+  [hidden]{display:none!important}
+
+  .visually-hidden{
+    position:absolute!important;
+    width:1px!important;
+    height:1px!important;
+    padding:0!important;
+    margin:-1px!important;
+    overflow:hidden!important;
+    clip:rect(0,0,0,0)!important;
+    white-space:nowrap!important;
+    border:0!important;
+  }
+
+  @media (min-width:620px){
+    .app{padding-top:24px}
+    .paper{padding:20px}
+    .item{grid-template-columns:1fr auto;align-items:center}
+    .item-actions{grid-template-columns:auto auto auto}
+    .toolbar{grid-template-columns:repeat(3,1fr)}
+    .section-head{grid-template-columns:1fr auto;align-items:start}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{
+      animation-duration:.01ms!important;
+      animation-iteration-count:1!important;
+      scroll-behavior:auto!important;
+      transition-duration:.01ms!important;
+    }
+  }
+</style>
+</head>
+<body>
+<main class="app">
+  <header class="hero">
+    <h1>マイ・オフラインギルド</h1>
+    <p>日々の小さな達成を、あなた自身の冒険記録に。</p>
+  </header>
+
+
+  <section class="paper" aria-labelledby="questsHeading">
+    <div class="section-head">
+      <div>
+        <h2 id="questsHeading">クエスト</h2>
+        <div class="small">軽め1G・標準2G・がんばった3G ／ 最大5個 ／ 新規追加は1日3個まで</div>
+        <div class="small" id="questLimitStatus" style="margin-top:3px"></div>
+        <div class="rank-inline" aria-live="polite">
+          <strong id="rankTitle">見習い冒険者</strong>
+          <span id="rankProgress">累計獲得 0G</span>
+        </div>
+      </div>
+      <button class="btn secondary section-add-btn" type="button" id="addQuestBtn">新規</button>
+    </div>
+    <div class="stack" id="questList"></div>
+  </section>
+
+  <section class="paper" aria-labelledby="rewardsHeading">
+    <div class="section-head">
+      <div>
+        <div class="shop-heading-row">
+          <h2 id="rewardsHeading">ギルド商店</h2>
+          <div class="shop-gold" aria-live="polite">所持 <strong id="goldValue">0G</strong></div>
+        </div>
+        <div class="small">小15G・中30G・大75G</div>
+      </div>
+      <button class="btn secondary section-add-btn" type="button" id="addRewardBtn">新規</button>
+    </div>
+    <div class="stack" id="rewardList"></div>
+  </section>
+
+  <section class="paper" aria-labelledby="logHeading">
+    <div class="section-head">
+      <div>
+        <h2 id="logHeading">冒険記録</h2>
+        <div class="small">クエスト・継続ボーナス・ご褒美交換を記録します</div>
+      </div>
+    </div>
+    <div class="log" id="logList"></div>
+  </section>
+
+  <section class="paper">
+    <details>
+      <summary>ギルドのポイント規則</summary>
+      <div class="notice">
+        日常クエストは1〜3G。Gを受け取れるのは、1クエストにつき1日1回です。
+        ひとつのクエストを7日連続で達成すると、7日目ごとに継続ボーナスとして＋5Gを獲得します。
+        クエストは最大5個まで登録でき、がんばった（3G）は最大1個、標準（2G）は最大2個まで設定できます。
+        ご褒美の目安は、小15G・中30G・大75Gです。
+      </div>
+    </details>
+  </section>
+
+  <section class="paper">
+    <details>
+      <summary>冒険の書：バックアップ</summary>
+      <div class="toolbar" style="margin-top:10px">
+        <button class="btn secondary" type="button" id="exportBtn">JSONを書き出す</button>
+        <button class="btn secondary" type="button" id="importBtn">JSONを読み込む</button>
+        <button class="btn danger" type="button" id="resetBtn">初期化</button>
+      </div>
+      <input class="visually-hidden" type="file" id="importFile" accept=".json,application/json">
+      <div class="notice">
+        通常のデータは、このブラウザの localStorage に保存されます。
+        サイトデータやブラウザストレージの削除、端末変更などで失われる可能性があるため、
+        大切なデータは定期的にJSONで書き出してください。
+      </div>
+    </details>
+  </section>
+
+  <section class="paper">
+    <details>
+      <summary>このアプリの保存・通信について</summary>
+      <div class="notice">
+        このHTMLには、外部API・アクセス解析・CDN・外部フォント・fetch通信を使用するコードを含めていません。
+        クエスト、ギルド商店、所持G、累計獲得G、冒険記録、連続達成情報は利用中のブラウザ内に保存します。
+        ただし、このHTMLを将来Webサイト上に置いて配布する場合は、ページを表示するための通常のWeb通信は発生します。
+      </div>
+    </details>
+  </section>
+</main>
+
+<dialog class="modal" id="editDialog">
+  <form method="dialog" class="modal-box" id="editForm">
+    <h3 id="editTitle">編集</h3>
+    <input type="hidden" id="editType">
+    <input type="hidden" id="editId">
+
+    <div class="form-grid">
+      <label>
+        名前
+        <input id="editName" maxlength="80" required autocomplete="off">
+      </label>
+
+      <label id="questTierLabel">
+        クエスト難易度
+        <select id="questTier">
+          <option value="1">軽め（1G）</option>
+          <option value="2">標準（2G）</option>
+          <option value="3">がんばった（3G）</option>
+        </select>
+      </label>
+
+      <label id="rewardTierLabel">
+        ご褒美ランク
+        <select id="rewardTier">
+          <option value="15">小さなご褒美（15G）</option>
+          <option value="30">中くらいのご褒美（30G）</option>
+          <option value="75">大きなご褒美（75G）</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn secondary" type="button" id="editCancelBtn">キャンセル</button>
+      <button class="btn" type="submit">保存</button>
+    </div>
+  </form>
+</dialog>
+
+<div class="status" id="status" role="status" aria-live="polite"></div>
+
+<script>
+(()=>{
+  "use strict";
+
+  const STORAGE_KEY = "myOfflineGuild_v9";
+  const LEGACY_STORAGE_KEYS = ["myOfflineGuild_v8","myOfflineGuild_v7","myOfflineGuild_v6","myOfflineGuild_v5","myOfflineGuild_v4","myOfflineGuild_v3","myOfflineGuild_v2","myOfflineGuild_v1"];
+  const DATA_VERSION = 9;
+  const CLAIM_LOCK_MS = 900;
+  const MAX_QUESTS = 5;
+  const MAX_DAILY_ADDS = 3;
+  const MAX_TIER3_QUESTS = 1;
+  const MAX_TIER2_QUESTS = 2;
+
+  const QUEST_VALUES = new Set([1,2,3]);
+  const REWARD_VALUES = new Set([15,30,75]);
+
+  const defaults = () => ({
+    version: DATA_VERSION,
+    gold: 0,
+    lifetimeGold: 0,
+    quests: [
+      {id:uid(), name:"作業を30分進めた", gold:2, streakDays:0, lastStreakDate:"", lastClaimDate:""},
+      {id:uid(), name:"読書をした", gold:1, streakDays:0, lastStreakDate:"", lastClaimDate:""},
+      {id:uid(), name:"今日やることを一つ終えた", gold:2, streakDays:0, lastStreakDate:"", lastClaimDate:""}
+    ],
+    rewards: [
+      {id:uid(), name:"好きな飲み物をゆっくり楽しむ", gold:15},
+      {id:uid(), name:"スイーツを楽しむ", gold:30},
+      {id:uid(), name:"少し特別な自由時間をつくる", gold:75}
+    ],
+    log: [],
+    questAddControl: {
+      date: "",
+      count: 0
+    }
+  });
+
+  let state = loadState();
+  const claimLocks = new Set();
+
+  const $ = (sel) => document.querySelector(sel);
+  const goldValue = $("#goldValue");
+  const rankTitle = $("#rankTitle");
+  const rankProgress = $("#rankProgress");
+  const questList = $("#questList");
+  const questLimitStatus = $("#questLimitStatus");
+  const addQuestBtn = $("#addQuestBtn");
+  const rewardList = $("#rewardList");
+  const logList = $("#logList");
+  const statusEl = $("#status");
+  const editDialog = $("#editDialog");
+  const editForm = $("#editForm");
+  const editTitle = $("#editTitle");
+  const editType = $("#editType");
+  const editId = $("#editId");
+  const editName = $("#editName");
+  const questTier = $("#questTier");
+  const rewardTier = $("#rewardTier");
+  const questTierLabel = $("#questTierLabel");
+  const rewardTierLabel = $("#rewardTierLabel");
+  const importFile = $("#importFile");
+
+  function uid(){
+    if (globalThis.crypto && typeof crypto.randomUUID === "function"){
+      return crypto.randomUUID();
+    }
+    return "id_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2,10);
+  }
+
+  function safeInt(value, fallback=0){
+    const n = Number(value);
+    return Number.isSafeInteger(n) ? n : fallback;
+  }
+
+  function localDateKey(date = new Date()){
+    const y = date.getFullYear();
+    const m = String(date.getMonth()+1).padStart(2,"0");
+    const d = String(date.getDate()).padStart(2,"0");
+    return `${y}-${m}-${d}`;
+  }
+
+  function dayNumber(dateKey){
+    const [y,m,d] = String(dateKey).split("-").map(Number);
+    if (!y || !m || !d) return NaN;
+    return Math.floor(Date.UTC(y,m-1,d) / 86400000);
+  }
+
+  function dayDiff(fromKey,toKey){
+    const a = dayNumber(fromKey);
+    const b = dayNumber(toKey);
+    if (!Number.isFinite(a) || !Number.isFinite(b)) return NaN;
+    return b - a;
+  }
+
+  function normalizeQuest(item){
+    const rawGold = safeInt(item?.gold,2);
+    const gold = QUEST_VALUES.has(rawGold)
+      ? rawGold
+      : rawGold <= 1 ? 1 : rawGold === 2 ? 2 : 3;
+
+    return {
+      id: typeof item?.id === "string" && item.id ? item.id : uid(),
+      name: typeof item?.name === "string" ? item.name.trim().slice(0,80) : "",
+      gold,
+      streakDays: Math.max(0, Math.min(99999, safeInt(item?.streakDays,0))),
+      lastStreakDate: typeof item?.lastStreakDate === "string" ? item.lastStreakDate : "",
+      lastClaimDate:
+        typeof item?.lastClaimDate === "string"
+          ? item.lastClaimDate
+          : (typeof item?.lastStreakDate === "string" ? item.lastStreakDate : "")
+    };
+  }
+
+  function normalizeReward(item){
+    const rawGold = safeInt(item?.gold,15);
+    const gold = REWARD_VALUES.has(rawGold)
+      ? rawGold
+      : rawGold <= 15 ? 15 : rawGold <= 30 ? 30 : 75;
+
+    return {
+      id: typeof item?.id === "string" && item.id ? item.id : uid(),
+      name: typeof item?.name === "string" ? item.name.trim().slice(0,80) : "",
+      gold
+    };
+  }
+
+  function normalizeLogEntry(entry){
+    if (!entry || typeof entry !== "object") return null;
+    const amount = safeInt(entry.amount,NaN);
+    const name = typeof entry.name === "string" ? entry.name.trim().slice(0,100) : "";
+    const date = typeof entry.date === "string" ? entry.date : "";
+    if (!Number.isSafeInteger(amount) || !name || !date) return null;
+    return {
+      id: typeof entry.id === "string" && entry.id ? entry.id : uid(),
+      amount,
+      name,
+      date
+    };
+  }
+
+  function validateImportedData(raw){
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)){
+      throw new Error("データ全体の形式が正しくありません。");
+    }
+
+    const version = safeInt(raw.version,-1);
+    if (![1,2,3,4,5,6,7,8,9].includes(version)){
+      throw new Error("このアプリで読み込めないデータバージョンです。");
+    }
+
+    if (!Array.isArray(raw.quests) || !Array.isArray(raw.rewards) || !Array.isArray(raw.log)){
+      throw new Error("クエスト・ご褒美・履歴の形式が正しくありません。");
+    }
+
+    const quests = raw.quests.map(normalizeQuest).filter(x=>x.name);
+    const rewards = raw.rewards.map(normalizeReward).filter(x=>x.name);
+    const log = raw.log.slice(0,2000).map(normalizeLogEntry).filter(Boolean);
+
+    const gold = safeInt(raw.gold,NaN);
+    if (!Number.isSafeInteger(gold) || gold < 0 || gold > Number.MAX_SAFE_INTEGER){
+      throw new Error("所持Gの値が正しくありません。");
+    }
+
+    let lifetimeGold;
+    if (version >= 6){
+      lifetimeGold = safeInt(raw.lifetimeGold,NaN);
+      if (!Number.isSafeInteger(lifetimeGold) || lifetimeGold < 0 || lifetimeGold > Number.MAX_SAFE_INTEGER){
+        throw new Error("累計獲得Gの値が正しくありません。");
+      }
+    }else{
+      // 旧バージョンでは、履歴に残るプラスGの合計を累計獲得Gとして移行します。
+      lifetimeGold = log.reduce((sum,entry)=>{
+        if (entry.amount > 0 && Number.isSafeInteger(sum + entry.amount)){
+          return sum + entry.amount;
+        }
+        return sum;
+      },0);
+    }
+
+    const questAddControl =
+      raw.questAddControl && typeof raw.questAddControl === "object"
+        ? {
+            date: typeof raw.questAddControl.date === "string" ? raw.questAddControl.date : "",
+            count: Math.max(0, Math.min(MAX_DAILY_ADDS, safeInt(raw.questAddControl.count,0)))
+          }
+        : {date:"",count:0};
+
+    return {
+      version: DATA_VERSION,
+      gold,
+      lifetimeGold,
+      quests: quests.slice(0,MAX_QUESTS),
+      rewards,
+      log,
+      questAddControl
+    };
+  }
+
+  function loadState(){
+    try{
+      const savedV2 = localStorage.getItem(STORAGE_KEY);
+      if (savedV2){
+        return validateImportedData(JSON.parse(savedV2));
+      }
+
+      for (const legacyKey of LEGACY_STORAGE_KEYS){
+        const savedLegacy = localStorage.getItem(legacyKey);
+        if (savedLegacy){
+          const migrated = validateImportedData(JSON.parse(savedLegacy));
+          try{
+            localStorage.setItem(STORAGE_KEY,JSON.stringify(migrated));
+          }catch(_){}
+          return migrated;
+        }
+      }
+
+      return defaults();
+    }catch(err){
+      console.warn("保存データを読み込めませんでした。初期状態で開始します。",err);
+      return defaults();
+    }
+  }
+
+  function saveState(){
+    try{
+      localStorage.setItem(STORAGE_KEY,JSON.stringify(state));
+    }catch(err){
+      showStatus("保存に失敗しました。ブラウザのストレージ設定をご確認ください。",3200);
+      console.error(err);
+    }
+  }
+
+  function showStatus(message,ms=1900){
+    statusEl.textContent = message;
+    statusEl.classList.add("show");
+    clearTimeout(showStatus.timer);
+    showStatus.timer = setTimeout(()=>statusEl.classList.remove("show"),ms);
+  }
+
+  function bumpGold(){}
+
+  function fmtDate(iso){
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return iso;
+    return new Intl.DateTimeFormat("ja-JP",{
+      year:"numeric",month:"2-digit",day:"2-digit",
+      hour:"2-digit",minute:"2-digit"
+    }).format(d);
+  }
+
+  function addLog(amount,name){
+    state.log.unshift({
+      id:uid(),
+      amount,
+      name:String(name).slice(0,100),
+      date:new Date().toISOString()
+    });
+    if (state.log.length > 2000) state.log.length = 2000;
+  }
+
+  function updateGold(delta,{countAsEarned=false}={}){
+    const next = state.gold + delta;
+    if (!Number.isSafeInteger(next) || next < 0) return false;
+
+    if (countAsEarned && delta > 0){
+      const lifetimeNext = Math.max(0,safeInt(state.lifetimeGold,0)) + delta;
+      if (!Number.isSafeInteger(lifetimeNext)) return false;
+      state.lifetimeGold = lifetimeNext;
+    }
+
+    state.gold = next;
+    return true;
+  }
+
+  function ensureQuestAddControl(){
+    const today = localDateKey();
+    if (!state.questAddControl || typeof state.questAddControl !== "object"){
+      state.questAddControl = {date:today,count:0};
+      return;
+    }
+    if (state.questAddControl.date !== today){
+      state.questAddControl.date = today;
+      state.questAddControl.count = 0;
+    }
+  }
+
+  function remainingQuestAdds(){
+    ensureQuestAddControl();
+    return Math.max(0, MAX_DAILY_ADDS - safeInt(state.questAddControl.count,0));
+  }
+
+  function questTierCount(gold,excludeId=""){
+    return state.quests.filter(q=>q.id !== excludeId && q.gold === gold).length;
+  }
+
+  function tierLimitMessage(gold){
+    if (gold === 3 && questTierCount(3) >= MAX_TIER3_QUESTS){
+      return "がんばった（3G）のクエストは最大1個までです。";
+    }
+    if (gold === 2 && questTierCount(2) >= MAX_TIER2_QUESTS){
+      return "標準（2G）のクエストは最大2個までです。";
+    }
+    return "";
+  }
+
+  function canAddQuest(){
+    return state.quests.length < MAX_QUESTS && remainingQuestAdds() > 0;
+  }
+
+  const RANKS = [
+    {min:0, title:"見習い冒険者"},
+    {min:50, title:"駆け出し冒険者"},
+    {min:150, title:"一人前の冒険者"},
+    {min:300, title:"熟練冒険者"},
+    {min:600, title:"ギルドの名手"},
+    {min:1000, title:"伝説の冒険者"}
+  ];
+
+  function currentRankInfo(){
+    const total = Math.max(0,safeInt(state.lifetimeGold,0));
+    let current = RANKS[0];
+    let next = null;
+
+    for (let i=0;i<RANKS.length;i++){
+      if (total >= RANKS[i].min){
+        current = RANKS[i];
+        next = RANKS[i+1] || null;
+      }else{
+        break;
+      }
+    }
+
+    return {total,current,next};
+  }
+
+  function render(){
+    ensureQuestAddControl();
+    goldValue.textContent = state.gold.toLocaleString("ja-JP") + "G";
+
+    const rank = currentRankInfo();
+    rankTitle.textContent = rank.current.title;
+    rankProgress.textContent = rank.next
+      ? `累計獲得 ${rank.total.toLocaleString("ja-JP")}G ／ 次の称号まで ${(rank.next.min-rank.total).toLocaleString("ja-JP")}G`
+      : `累計獲得 ${rank.total.toLocaleString("ja-JP")}G ／ 最高称号`;
+
+    const remainingAdds = remainingQuestAdds();
+    const remainingSlots = Math.max(0, MAX_QUESTS - state.quests.length);
+
+    const tier3Count = questTierCount(3);
+    const tier2Count = questTierCount(2);
+
+    questLimitStatus.textContent =
+      `登録 ${state.quests.length}/${MAX_QUESTS}個 ／ 3G ${tier3Count}/${MAX_TIER3_QUESTS}個 ／ 2G ${tier2Count}/${MAX_TIER2_QUESTS}個 ／ 本日の新規追加 残り${remainingAdds}個`;
+
+    addQuestBtn.disabled = !canAddQuest();
+    addQuestBtn.title =
+      remainingSlots <= 0
+        ? "クエストは最大5個までです"
+        : remainingAdds <= 0
+          ? "本日の新規追加上限（3個）に達しました"
+          : "";
+
+    renderItems();
+    renderLog();
+    saveState();
+  }
+
+  function makeButton(label,className,onClick,disabled=false,ariaLabel=""){
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = className;
+    btn.textContent = label;
+    btn.disabled = disabled;
+    if (ariaLabel) btn.setAttribute("aria-label",ariaLabel);
+    btn.addEventListener("click",onClick);
+    return btn;
+  }
+
+  function streakText(q){
+    const today = localDateKey();
+    let days = q.streakDays || 0;
+
+    if (q.lastStreakDate){
+      const diff = dayDiff(q.lastStreakDate,today);
+      if (Number.isFinite(diff) && diff > 1){
+        days = 0;
+      }
+    }
+
+    if (days <= 0){
+      return "継続ボーナス：0日 / 7日";
+    }
+
+    const inCycle = days % 7;
+    const shown = inCycle === 0 ? 7 : inCycle;
+    return `継続：${days}日（次の＋5Gまで ${inCycle === 0 ? 7 : 7-inCycle}日）`;
+  }
+
+  function renderItems(){
+    questList.replaceChildren();
+    rewardList.replaceChildren();
+
+    if (!state.quests.length){
+      const empty = document.createElement("div");
+      empty.className = "empty";
+      empty.textContent = "クエストはまだありません。";
+      questList.append(empty);
+    }
+
+    state.quests.forEach(q=>{
+      const row = document.createElement("article");
+      row.className = "item";
+
+      const main = document.createElement("div");
+      main.className = "item-main";
+
+      const title = document.createElement("div");
+      title.className = "item-title";
+      title.textContent = q.name;
+
+      const meta = document.createElement("div");
+      meta.className = "item-meta";
+      meta.textContent =
+        q.gold === 1 ? "軽め・+1G" :
+        q.gold === 2 ? "標準・+2G" :
+        "がんばった・+3G";
+
+      const streak = document.createElement("div");
+      streak.className = "streak";
+      streak.textContent = streakText(q);
+
+      main.append(title,meta,streak);
+
+      const actions = document.createElement("div");
+      actions.className = "item-actions";
+
+      const claimedToday = q.lastClaimDate === localDateKey();
+      const claim = makeButton(
+        claimedToday ? "本日達成済み" : "達成",
+        "btn success",
+        ()=>claimQuest(q.id),
+        claimLocks.has(q.id) || claimedToday,
+        claimedToday ? q.name + "は本日達成済み" : q.name + "を達成"
+      );
+
+      const edit = makeButton(
+        "編集",
+        "btn secondary icon-btn",
+        ()=>openEditor("quest",q.id),
+        false,
+        q.name+"を編集"
+      );
+
+      const del = makeButton(
+        "削除",
+        "btn secondary icon-btn",
+        ()=>deleteItem("quest",q.id),
+        false,
+        q.name+"を削除"
+      );
+
+      actions.append(claim,edit,del);
+      row.append(main,actions);
+      questList.append(row);
+    });
+
+    if (!state.rewards.length){
+      const empty = document.createElement("div");
+      empty.className = "empty";
+      empty.textContent = "ご褒美はまだありません。";
+      rewardList.append(empty);
+    }
+
+    state.rewards.forEach(r=>{
+      const row = document.createElement("article");
+      row.className = "item";
+
+      const main = document.createElement("div");
+      main.className = "item-main";
+
+      const title = document.createElement("div");
+      title.className = "item-title";
+      title.textContent = r.name;
+
+      const meta = document.createElement("div");
+      meta.className = "item-meta";
+      meta.textContent =
+        r.gold === 15 ? "小さなご褒美・15G" :
+        r.gold === 30 ? "中くらいのご褒美・30G" :
+        "大きなご褒美・75G";
+
+      main.append(title,meta);
+
+      const actions = document.createElement("div");
+      actions.className = "item-actions";
+
+      const exchange = makeButton(
+        "交換",
+        "btn",
+        ()=>exchangeReward(r.id),
+        state.gold < r.gold,
+        r.name+"と交換"
+      );
+
+      const edit = makeButton(
+        "編集",
+        "btn secondary icon-btn",
+        ()=>openEditor("reward",r.id),
+        false,
+        r.name+"を編集"
+      );
+
+      const del = makeButton(
+        "削除",
+        "btn secondary icon-btn",
+        ()=>deleteItem("reward",r.id),
+        false,
+        r.name+"を削除"
+      );
+
+      actions.append(exchange,edit,del);
+      row.append(main,actions);
+      rewardList.append(row);
+    });
+  }
+
+  function renderLog(){
+    logList.replaceChildren();
+
+    if (!state.log.length){
+      const empty = document.createElement("div");
+      empty.className = "empty";
+      empty.textContent = "まだ記録はありません。最初のクエストを達成してみましょう。";
+      logList.append(empty);
+      return;
+    }
+
+    state.log.forEach(entry=>{
+      const row = document.createElement("div");
+      row.className = "log-row";
+
+      const amount = document.createElement("div");
+      amount.className = "log-amount " + (entry.amount >= 0 ? "plus" : "minus");
+      amount.textContent =
+        (entry.amount >= 0 ? "+" : "") +
+        entry.amount.toLocaleString("ja-JP") +
+        "G";
+
+      const body = document.createElement("div");
+      const title = document.createElement("div");
+      title.className = "log-title";
+      title.textContent = entry.name;
+
+      const date = document.createElement("div");
+      date.className = "log-date";
+      date.textContent = fmtDate(entry.date);
+
+      body.append(title,date);
+      row.append(amount,body);
+      logList.append(row);
+    });
+  }
+
+  function updateQuestStreak(q){
+    const today = localDateKey();
+
+    if (!q.lastStreakDate){
+      q.streakDays = 1;
+      q.lastStreakDate = today;
+      return {counted:true,bonus:false};
+    }
+
+    const diff = dayDiff(q.lastStreakDate,today);
+
+    if (diff === 0){
+      return {counted:false,bonus:false};
+    }
+
+    if (diff === 1){
+      q.streakDays = Math.max(0,safeInt(q.streakDays,0)) + 1;
+      q.lastStreakDate = today;
+    }else{
+      q.streakDays = 1;
+      q.lastStreakDate = today;
+    }
+
+    const bonus = q.streakDays > 0 && q.streakDays % 7 === 0;
+    return {counted:true,bonus};
+  }
+
+  function claimQuest(id){
+    if (claimLocks.has(id)) return;
+
+    const q = state.quests.find(x=>x.id===id);
+    if (!q) return;
+
+    const today = localDateKey();
+    if (q.lastClaimDate === today){
+      showStatus("このクエストのGは本日すでに受け取り済みです。");
+      renderItems();
+      return;
+    }
+
+    claimLocks.add(id);
+
+    if (!updateGold(q.gold,{countAsEarned:true})){
+      claimLocks.delete(id);
+      showStatus("Gの計算に失敗しました。");
+      return;
+    }
+
+    addLog(q.gold,q.name);
+    q.lastClaimDate = today;
+
+    const streakResult = updateQuestStreak(q);
+    let bonusAwarded = false;
+
+    if (streakResult.bonus){
+      if (updateGold(5,{countAsEarned:true})){
+        addLog(5,`${q.name}：7日継続ボーナス`);
+        bonusAwarded = true;
+      }
+    }
+
+    render();
+    bumpGold();
+
+    if (bonusAwarded){
+      showStatus(`+${q.gold}G ＋ 継続ボーナス5G！`);
+    }else if (streakResult.counted){
+      showStatus(`+${q.gold}G　今日の継続記録を更新しました。`);
+    }else{
+      showStatus(`+${q.gold}G　クエスト達成！`);
+    }
+
+    setTimeout(()=>{
+      claimLocks.delete(id);
+      renderItems();
+    },CLAIM_LOCK_MS);
+  }
+
+  function exchangeReward(id){
+    const r = state.rewards.find(x=>x.id===id);
+    if (!r) return;
+
+    if (state.gold < r.gold){
+      showStatus("Gが足りません。");
+      return;
+    }
+
+    const ok = window.confirm(
+      "「" + r.name + "」を " +
+      r.gold.toLocaleString("ja-JP") +
+      "G で交換しますか？"
+    );
+
+    if (!ok) return;
+
+    if (!updateGold(-r.gold)){
+      showStatus("Gの計算に失敗しました。");
+      return;
+    }
+
+    addLog(-r.gold,r.name);
+    render();
+    bumpGold();
+    showStatus("ご褒美と交換しました。");
+  }
+
+  function openEditor(type,id=""){
+    if (type === "quest" && !id){
+      ensureQuestAddControl();
+      if (state.quests.length >= MAX_QUESTS){
+        showStatus("クエストは最大5個まで登録できます。");
+        return;
+      }
+      if (remainingQuestAdds() <= 0){
+        showStatus("新しいクエストを追加できるのは1日3個までです。");
+        return;
+      }
+    }
+
+    const list = type === "quest" ? state.quests : state.rewards;
+    const item = id ? list.find(x=>x.id===id) : null;
+
+    editType.value = type;
+    editId.value = item?.id || "";
+    editName.value = item?.name || "";
+
+    const isQuest = type === "quest";
+    questTierLabel.hidden = !isQuest;
+    rewardTierLabel.hidden = isQuest;
+
+    if (isQuest){
+      questTier.value = String(item?.gold || 2);
+    }else{
+      rewardTier.value = String(item?.gold || 15);
+    }
+
+    editTitle.textContent =
+      (item ? "編集：" : "追加：") +
+      (isQuest ? "クエスト" : "ご褒美");
+
+    if (typeof editDialog.showModal === "function"){
+      editDialog.showModal();
+      setTimeout(()=>editName.focus(),0);
+    }else{
+      showStatus("このブラウザでは編集画面を開けません。");
+    }
+  }
+
+  function closeEditor(){
+    if (editDialog.open) editDialog.close();
+  }
+
+  editForm.addEventListener("submit",(e)=>{
+    e.preventDefault();
+
+    const type = editType.value;
+    const name = editName.value.trim();
+
+    if (!name){
+      showStatus("名前を入力してください。");
+      return;
+    }
+
+    const list = type === "quest" ? state.quests : state.rewards;
+    const id = editId.value;
+
+    if (type === "quest"){
+      const gold = safeInt(questTier.value,0);
+      if (!QUEST_VALUES.has(gold)){
+        showStatus("クエスト難易度を選び直してください。");
+        return;
+      }
+
+      const limitMessage =
+        gold === 3
+          ? (questTierCount(3,id) >= MAX_TIER3_QUESTS ? "がんばった（3G）のクエストは最大1個までです。" : "")
+          : gold === 2
+            ? (questTierCount(2,id) >= MAX_TIER2_QUESTS ? "標準（2G）のクエストは最大2個までです。" : "")
+            : "";
+
+      if (limitMessage){
+        showStatus(limitMessage,2600);
+        return;
+      }
+
+      if (id){
+        const item = list.find(x=>x.id===id);
+        if (!item) return;
+
+        const nextName = name.slice(0,80);
+        const changed = item.name !== nextName || item.gold !== gold;
+
+        item.name = nextName;
+        item.gold = gold;
+
+        if (changed){
+          item.streakDays = 0;
+          item.lastStreakDate = "";
+        }
+      }else{
+        ensureQuestAddControl();
+
+        if (state.quests.length >= MAX_QUESTS){
+          showStatus("クエストは最大5個まで登録できます。");
+          return;
+        }
+        if (remainingQuestAdds() <= 0){
+          showStatus("新しいクエストを追加できるのは1日3個までです。");
+          return;
+        }
+
+        list.push({
+          id:uid(),
+          name:name.slice(0,80),
+          gold,
+          streakDays:0,
+          lastStreakDate:"",
+          lastClaimDate:""
+        });
+
+        state.questAddControl.count += 1;
+      }
+    }else{
+      const gold = safeInt(rewardTier.value,0);
+      if (!REWARD_VALUES.has(gold)){
+        showStatus("ご褒美ランクを選び直してください。");
+        return;
+      }
+
+      if (id){
+        const item = list.find(x=>x.id===id);
+        if (!item) return;
+        item.name = name.slice(0,80);
+        item.gold = gold;
+      }else{
+        list.push({
+          id:uid(),
+          name:name.slice(0,80),
+          gold
+        });
+      }
+    }
+
+    closeEditor();
+    render();
+    showStatus("保存しました。");
+  });
+
+  $("#editCancelBtn").addEventListener("click",closeEditor);
+  addQuestBtn.addEventListener("click",()=>openEditor("quest"));
+  $("#addRewardBtn").addEventListener("click",()=>openEditor("reward"));
+
+  function deleteItem(type,id){
+    const list = type === "quest" ? state.quests : state.rewards;
+    const item = list.find(x=>x.id===id);
+    if (!item) return;
+
+    const ok = window.confirm("「" + item.name + "」を削除しますか？");
+    if (!ok) return;
+
+    const next = list.filter(x=>x.id!==id);
+    if (type === "quest"){
+      state.quests = next;
+    }else{
+      state.rewards = next;
+    }
+
+    render();
+    showStatus("削除しました。");
+  }
+
+  $("#exportBtn").addEventListener("click",()=>{
+    try{
+      const text = JSON.stringify(state,null,2);
+      const blob = new Blob([text],{type:"application/json"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      const stamp = new Date().toISOString().slice(0,10).replaceAll("-","");
+      a.href = url;
+      a.download = "offline-guild-v9-backup-" + stamp + ".json";
+      document.body.append(a);
+      a.click();
+      a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),1000);
+      showStatus("冒険の書を書き出しました。");
+    }catch(err){
+      console.error(err);
+      showStatus("書き出しに失敗しました。");
+    }
+  });
+
+  $("#importBtn").addEventListener("click",()=>importFile.click());
+
+  importFile.addEventListener("change",async()=>{
+    const file = importFile.files?.[0];
+    importFile.value = "";
+    if (!file) return;
+
+    try{
+      if (file.size > 5*1024*1024){
+        throw new Error("ファイルが大きすぎます。");
+      }
+
+      const text = await file.text();
+      const parsed = JSON.parse(text);
+      const candidate = validateImportedData(parsed);
+
+      const ok = window.confirm(
+        "現在のデータを、読み込んだ冒険の書で置き換えますか？\n" +
+        "読み込み前のデータは自動では戻せません。"
+      );
+
+      if (!ok) return;
+
+      state = candidate;
+      claimLocks.clear();
+      render();
+      showStatus("冒険の書を読み込みました。");
+    }catch(err){
+      console.error(err);
+      showStatus(
+        "読み込めませんでした。現在のデータは変更していません。",
+        3200
+      );
+    }
+  });
+
+  $("#resetBtn").addEventListener("click",()=>{
+    const ok = window.confirm(
+      "クエスト・ギルド商店・所持G・累計獲得G・冒険記録・連続記録をすべて初期状態へ戻しますか？\n" +
+      "必要なら先にJSONを書き出してください。"
+    );
+
+    if (!ok) return;
+
+    const second = window.confirm("本当に初期化しますか？");
+    if (!second) return;
+
+    state = defaults();
+    claimLocks.clear();
+    render();
+    showStatus("初期状態に戻しました。");
+  });
+
+
+  let midnightTimer = null;
+
+  function scheduleMidnightRefresh(){
+    if (midnightTimer) clearTimeout(midnightTimer);
+
+    const now = new Date();
+    const nextMidnight = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate() + 1,
+      0, 0, 1, 0
+    );
+
+    const delay = Math.max(1000, nextMidnight.getTime() - now.getTime());
+
+    midnightTimer = setTimeout(()=>{
+      ensureQuestAddControl();
+      render();
+      showStatus("日付が変わりました。今日のクエストに挑戦できます。",2200);
+      scheduleMidnightRefresh();
+    },delay);
+  }
+
+  function refreshForCurrentDay(){
+    ensureQuestAddControl();
+    render();
+    scheduleMidnightRefresh();
+  }
+
+  window.addEventListener("focus",refreshForCurrentDay);
+  document.addEventListener("visibilitychange",()=>{
+    if (!document.hidden) refreshForCurrentDay();
+  });
+
+  render();
+  scheduleMidnightRefresh();
+})();
+</script>
+</body>
+</html>
